@@ -36,6 +36,26 @@ def register_employee():
     print(f"\nEmployee {name} registered successfully!")
     conn.close()
 
+# Admin authentication function
+def authenticate_admin():
+    conn = connect_db()
+    cursor = conn.cursor()
+    username = input("Enter Admin Username: ")
+    password = input("Enter Admin Password: ")
+
+    query = "SELECT * FROM admin WHERE username = %s AND password = %s"
+    cursor.execute(query, (username, password))
+    result = cursor.fetchone()
+
+    if result:
+        print(f"Welcome, {username}!")
+        conn.close()
+        return True
+    else:
+        print("Invalid username or password.")
+        conn.close()
+        return False
+    
 # Read all employees and display them in tabular format
 def read_all_employees():
     conn = connect_db()
@@ -123,31 +143,34 @@ def delete_employee():
 
 # Main function to run the application
 def main():
-    while True:
-        print("\nEmployee Management System")
-        print("1. Register New Employee")
-        print("2. View All Employees")
-        print("3. View Employee by ID")
-        print("4. Update Employee")
-        print("5. Delete Employee")
-        print("6. Exit")
+    if authenticate_admin():
+        while True:
+            print("\nEmployee Management System")
+            print("1. Register New Employee")
+            print("2. View All Employees")
+            print("3. View Employee by ID")
+            print("4. Update Employee")
+            print("5. Delete Employee")
+            print("6. Exit")
 
-        choice = input("\nEnter your choice: ")
+            choice = input("Enter your choice: ")
 
-        if choice == '1':
-            register_employee()
-        elif choice == '2':
-            read_all_employees()
-        elif choice == '3':
-            read_employee_by_id()
-        elif choice == '4':
-            update_employee()
-        elif choice == '5':
-            delete_employee()
-        elif choice == '6':
-            break
-        else:
-            print("\nInvalid choice. Please try again.")
+            if choice == '1':
+                register_employee()
+            elif choice == '2':
+                read_all_employees()
+            elif choice == '3':
+                read_employee_by_id()
+            elif choice == '4':
+                update_employee()
+            elif choice == '5':
+                delete_employee()
+            elif choice == '6':
+                break
+            else:
+                print("Invalid choice. Please try again.")
+    else:
+        print("Access Denied!")
 
 if __name__ == "__main__":
     main()
